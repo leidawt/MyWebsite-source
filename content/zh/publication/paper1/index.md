@@ -1,7 +1,7 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "TagSLAM: Robust SLAM with Fiducial Markers"
+title: "--A test publication-- TagSLAM: Robust SLAM with Fiducial Markers"
 authors: ['Pfrommer Bernd']
 date: 2020-02-04T19:33:01+08:00
 doi: ""
