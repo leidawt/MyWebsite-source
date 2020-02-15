@@ -33,6 +33,8 @@ projects: []
 #    url: 'https://twitter.com/Twitter'
 
 ---
+{{% toc %}}
+
 # 动机
 鉴于CSDN博客的自动化备份工具基本都挂了，为了简单的备份csdn的markdown博客，编写此小工具，主要用于下载markdown博客里的外链插图到本地，同时做一下链接替换的工作。
 原理如下：
@@ -70,8 +72,7 @@ class BlogTransformer:
         if mode == 'hugo-academic':
             # https://sourcethemes.com/academic/docs/writing-markdown-latex/#images
             # use format required by hugo
-            # {{<figure src = "{0}" title = "" lightbox = "true">}}
-            self.REPLACE_MODE = '{{{{<figure src = "{0}" title = "" lightbox = "true">}}}}'
+            self.REPLACE_MODE = "{ { { {<figure src = "{0}" title = "" lightbox = "true">} } } }"
         if mode == 'local-img-url':
             # use standard markdown format
             self.REPLACE_MODE = '[]({0})'
