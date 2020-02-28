@@ -11,12 +11,13 @@ date: 2019-06-07T12:00:00+08:00
 lastmod: 2019-06-07T12:00:00+08:00
 featured: false
 draft: false
+markup: blackfriday
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder.
 # Focal points: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight.
 image:
-  caption: "Center"
+  caption: ""
   focal_point: ""
   preview_only: false
 
@@ -33,12 +34,13 @@ projects: []
 #    url: 'https://twitter.com/Twitter'
 
 ---
+{{% toc %}}
 此书从实践角度讲了卡尔曼等一系列贝叶斯滤波器，没有从线控视角入手，提供了大量直观解读和代码实例，看着玩玩摘录些重点
 @[TOC]
 # 1.g-h滤波器
 又称Alpha beta filter，f-g filter，是一类融合观测和估计的滤波器中形式上最朴素的。原书表达不清晰，下为wiki的。g-h滤波器只考虑 x x' 作为状态变量
 {{<figure src = "0.png" title = "" lightbox = "true">}}
-其中$x_k$是观测，此算法很简单，（1）（2）按模型更新状态，（3）步融合观测来得到残差，（4）（5）根据残差修订状态。显然其中两个参数是决定的是融合比例。
+其中$x\_k$是观测，此算法很简单，（1）（2）按模型更新状态，（3）步融合观测来得到残差，（4）（5）根据残差修订状态。显然其中两个参数是决定的是融合比例。
 **参数的选择**
 g的影响
 {{<figure src = "1.png" title = "" lightbox = "true">}}
@@ -89,7 +91,7 @@ interact(animate_discrete_bayes, step=IntSlider(value=12, max=len(zs)*2));
 ```
 predict函数根据上次位置预测结果为先验进行预测，预测方法是假设其以kernel（）的概率向左或向右移动1个位置。为了计算方便，是通过卷积实现的，是个小trick
 convolve(np.roll(pdf, offset), kernel, mode='wrap')
-此步骤实际是全概率公式的应用：$$P(X_i^t) = \sum_j P(X_j^{t-1})  P(x_i | x_j)$$
+此步骤实际是全概率公式的应用：$$P(X\_i^t) = \sum\_j P(X\_j^{t-1})  P(x\_i | x\_j)$$
 
 
 得到新的prior 后，计算观测的likelihood（对每个点）。
@@ -106,7 +108,7 @@ convolve(np.roll(pdf, offset), kernel, mode='wrap')
 ```
 z_prob 表示相信传感器的程度。例子中何为1表示完全相信，故当z=1时强烈加大在三个有门位置的likelihood，z=0时表示一定没门，强烈加大其余位置likelihood。
 最后的update步骤实为应用下面的贝叶斯公式产生新息，其将likelihood和prior相乘并归一化
-$$p(x_i \mid z) = \frac{p(z \mid x_i) p(x_i)}{p(z)}$$
+$$p(x\_i \mid z) = \frac{p(z \mid x\_i) p(x\_i)}{p(z)}$$
 其中p(x)即prior，p(z|x)即算得的likelihood。分母仅仅是个norm项，顾不必计算，只需归一化一下即可。
 
 最后运行起来如下：
@@ -147,7 +149,7 @@ $$\begin{array}{l|l|c}
 **具体predict方法**
 $$ \begin{aligned}\bar{x}_k &= x_{k-1} + v_k \Delta t \\
  &= x_{k-1} + f_x\end{aligned}$$
- 其中$f_x,x$均为高斯分布。编程上用python的具名数组做了一下，比较规范，还改了repr魔法方法
+ 其中$f\_x,x$均为高斯分布。编程上用python的具名数组做了一下，比较规范，还改了repr魔法方法
  
 
 ```python
@@ -167,8 +169,8 @@ def predict(pos, movement):
 likelihood是给定当前状态下测量的概率，此处likelihood就是我们的measurement，也用高斯表示。
 $$\begin{aligned}
 \mathcal N(\mu, \sigma^2) &= \| prior \cdot likelihood \|\\
-&= \| \mathcal{N}(\bar\mu, \bar\sigma^2)\cdot \mathcal{N}(\mu_z, \sigma_z^2) \|\\
-&= \mathcal N(\frac{\bar\sigma^2 \mu_z + \sigma_z^2 \bar\mu}{\bar\sigma^2 + \sigma_z^2},\frac{\bar\sigma^2\sigma_z^2}{\bar\sigma^2 + \sigma_z^2})
+&= \| \mathcal{N}(\bar\mu, \bar\sigma^2)\cdot \mathcal{N}(\mu\_z, \sigma_z^2) \|\\
+&= \mathcal N(\frac{\bar\sigma^2 \mu\_z + \sigma_z^2 \bar\mu}{\bar\sigma^2 + \sigma_z^2},\frac{\bar\sigma^2\sigma_z^2}{\bar\sigma^2 + \sigma_z^2})
 \end{aligned}$$
 
 ```python
@@ -199,46 +201,46 @@ We see that the filter works. Now let's go back to the math to understand what i
 Therefore the mean of the posterior is given by:
 
 $$
-\mu=\frac{\bar\sigma^2\, \mu_z + \sigma_z^2 \, \bar\mu} {\bar\sigma^2 + \sigma_z^2}
+\mu=\frac{\bar\sigma^2\, \mu\_z + \sigma_z^2 \, \bar\mu} {\bar\sigma^2 + \sigma_z^2}
 $$
 
 I use the subscript $z$ to denote the measurement. We can rewrite this as:
 
-$$\mu = \left( \frac{\bar\sigma^2}{\bar\sigma^2 + \sigma_z^2}\right) \mu_z + \left(\frac{\sigma_z^2}{\bar\sigma^2 + \sigma_z^2}\right)\bar\mu$$
+$$\mu = \left( \frac{\bar\sigma^2}{\bar\sigma^2 + \sigma\_z^2}\right) \mu\_z + \left(\frac{\sigma\_z^2}{\bar\sigma^2 + \sigma\_z^2}\right)\bar\mu$$
 
 In this form it is easy to see that we are scaling the measurement and the prior by weights: 
 
-$$\mu = W_1 \mu_z + W_2 \bar\mu$$
+$$\mu = W\_1 \mu\_z + W\_2 \bar\mu$$
 
 
-The weights sum to one because the denominator is a normalization term. We introduce a new term, $K=W_1$, giving us:
+The weights sum to one because the denominator is a normalization term. We introduce a new term, $K=W\_1$, giving us:
 
 $$\begin{aligned}
-\mu &= K \mu_z + (1-K) \bar\mu\\
-&= \bar\mu + K(\mu_z - \bar\mu)
+\mu &= K \mu\_z + (1-K) \bar\mu\\
+&= \bar\mu + K(\mu\_z - \bar\mu)
 \end{aligned}$$
 
 where
 
-$$K = \frac {\bar\sigma^2}{\bar\sigma^2 + \sigma_z^2}$$
+$$K = \frac {\bar\sigma^2}{\bar\sigma^2 + \sigma\_z^2}$$
 
-$K$ is the *Kalman gain*. It's the crux of the Kalman filter. It is a scaling term that chooses a value partway between $\mu_z$ and $\bar\mu$.
+$K$ is the *Kalman gain*. It's the crux of the Kalman filter. It is a scaling term that chooses a value partway between $\mu\_z$ and $\bar\mu$.
 
-Let's work a few examples. If the measurement is nine times more accurate than the prior, then $\bar\sigma^2 = 9\sigma_z^2$, and
+Let's work a few examples. If the measurement is nine times more accurate than the prior, then $\bar\sigma^2 = 9\sigma\_z^2$, and
 
 $$\begin{aligned}
-\mu&=\frac{9 \sigma_z^2 \mu_z + \sigma_z^2\, \bar\mu} {9 \sigma_z^2 + \sigma_\mathtt{z}^2} \\
-&= \left(\frac{9}{10}\right) \mu_z + \left(\frac{1}{10}\right) \bar\mu
+\mu&=\frac{9 \sigma_z^2 \mu\_z + \sigma_z^2\, \bar\mu} {9 \sigma_z^2 + \sigma_\mathtt{z}^2} \\
+&= \left(\frac{9}{10}\right) \mu\_z + \left(\frac{1}{10}\right) \bar\mu
 \end{aligned}
 $$
 
 Hence $K = \frac 9 {10}$, and to form the posterior we take nine tenths of the measurement and one tenth of the prior. 
 
-If the measurement and prior are equally accurate, then $\bar\sigma^2 = \sigma_z^2$ and
+If the measurement and prior are equally accurate, then $\bar\sigma^2 = \sigma\_z^2$ and
 
 $$\begin{gathered}
-\mu=\frac{\sigma_z^2\,  (\bar\mu + \mu_z)}{2\sigma_\mathtt{z}^2} \\
-= \left(\frac{1}{2}\right)\bar\mu + \left(\frac{1}{2}\right)\mu_z
+\mu=\frac{\sigma_z^2\,  (\bar\mu + \mu\_z)}{2\sigma_\mathtt{z}^2} \\
+= \left(\frac{1}{2}\right)\bar\mu + \left(\frac{1}{2}\right)\mu\_z
 \end{gathered}$$
 
 which is the average of the two means. It makes intuitive sense to take the average of two equally accurate values.
@@ -276,19 +278,19 @@ def predict(posterior, movement):
 
 <u>Predict</u>
 
-$$\begin{array}{|l|l|l|}\\
-\hline\\
+$\begin{array}{|l|l|l|}
+\hline
 \text{Equation} & \text{Implementation} & \text{Kalman Form}\\
-\hline\\
+\hline
  \bar x = x + f_x & \bar\mu = \mu + \mu_{f_x} & \bar x = x + dx\\
 & \bar\sigma^2 = \sigma^2 + \sigma_{f_x}^2 & \bar P = P + Q\\
-\hline\\
-\end{array}$$
+\hline
+\end{array}$
 
 
 <u>Update</u>
 
-$$\begin{array}{|l|l|l|}
+$\begin{array}{|l|l|l|}
 \hline
 \text{Equation} & \text{Implementation}& \text{Kalman Form}\\
 \hline
@@ -297,7 +299,7 @@ $$\begin{array}{|l|l|l|}
  & \mu = \bar \mu + Ky & x = \bar x + Ky\\
  & \sigma^2 = \frac {\bar\sigma^2 \sigma_z^2} {\bar\sigma^2 + \sigma_z^2} & P = (1-K)\bar P\\
 \hline
-\end{array}$$
+\end{array}$
 
 其他小问题：
 1.此方法难以处理非线性
@@ -347,7 +349,7 @@ $\begin{array}{|l|l|l|}
 & y = z - \bar x & \mathbf y = \mathbf z - \mathbf{H\bar x} \\
 & K = \frac{\bar P}{\bar P+R}&
 \mathbf K = \mathbf{\bar{P}H}^\mathsf T (\mathbf{H\bar{P}H}^\mathsf T + \mathbf R)^{-1} \\
-\mu=\frac{\bar\sigma^2\, \mu_z + \sigma_z^2 \, \bar\mu} {\bar\sigma^2 + \sigma_z^2} & x = \bar x + Ky & \mathbf x = \bar{\mathbf x} + \mathbf{Ky} \\
+\mu=\frac{\bar\sigma^2\, \mu\_z + \sigma_z^2 \, \bar\mu} {\bar\sigma^2 + \sigma_z^2} & x = \bar x + Ky & \mathbf x = \bar{\mathbf x} + \mathbf{Ky} \\
 \sigma^2 = \frac{\sigma_1^2\sigma_2^2}{\sigma_1^2+\sigma_2^2} & P = (1-K)\bar P &
 \mathbf P = (\mathbf I - \mathbf{KH})\mathbf{\bar{P}} \\
 \hline
@@ -409,7 +411,7 @@ x, P = update(x, P, z, R, H)
 ```
 # 7. 卡尔曼滤波器数学细节
 **动态系统的状态空间表达**
-一般建立系统微分方程后很容易得到连续状态方程$\dot{\mathbf x} = \mathbf{Ax} + \mathbf{Bu} + w$（w是噪声），接下来的问题是要离散化为$\mathbf x_k = \mathbf {Fx}_{k-1}$以让计算机得以运行。离散化实际上就是在解微分方程组，方法很多，工程上常用数值方法。如van Loan's方法可求 $\mathbf F_k$ 并同时得到 $\mathbf Q_k$
+一般建立系统微分方程后很容易得到连续状态方程$\dot{\mathbf x} = \mathbf{Ax} + \mathbf{Bu} + w$（w是噪声），接下来的问题是要离散化为$\mathbf x\_k = \mathbf {Fx}_{k-1}$以让计算机得以运行。离散化实际上就是在解微分方程组，方法很多，工程上常用数值方法。如van Loan's方法可求 $\mathbf F\_k$ 并同时得到 $\mathbf Q\_k$
 **过程噪声Q的确定**
 相似的，我们也需要对噪声w离散化以确定Q，具体要看我们对噪声的假设，典型的有连续白噪声模型和分段白噪声模型，各有利弊，实践上通过实验来确定。其具体计算可调用如下：
 
@@ -509,12 +511,12 @@ plt.xlim(0, 20);
 高阶数的过程模型很容易过拟合，我们可以选择采用较低阶数，同时适当加大过程噪声Q以达到统样不错的效果。
 **检测和避免糟糕的测量值**
 显然实践中由于传感器故障等原因我们偶尔会得到很糟糕的观测值，这个需要被检测和剔除以避免其破坏性影响。一个朴素但有效的做法是gating。可以利用P矩阵中的状态方差来判断观测值的好坏。具体的，可以使用mahalanobis distance。mahalanobis distance判断一个点到分布的距离，其定义如下：
-$$D_m= \sqrt{(\mathbf x-\mu)^\mathsf T \mathbf S^{-1} (\mathbf x-\mu)}$$
+$$D\_m= \sqrt{(\mathbf x-\mu)^\mathsf T \mathbf S^{-1} (\mathbf x-\mu)}$$
 其中S是协方差矩阵。
 它其实很像欧氏距离:
-$$D_e= \sqrt{(\mathbf x-\mathbf y)^\mathsf T (\mathbf x-\mathbf y)}$$
+$$D\_e= \sqrt{(\mathbf x-\mathbf y)^\mathsf T (\mathbf x-\mathbf y)}$$
 若S是对角阵，马氏距离可简化为：
-$$D_m = \sqrt{\sum_{i-1}^N \frac{(x_i - \mu_i)^2}{\sigma_i}}$$
+$$D\_m = \sqrt{\sum\_{i-1}^N \frac{(x\_i - \mu\_i)^2}{\sigma\_i}}$$
 就是欧氏距离加了个方差做因子。
 **滤波器性能评估**
 真实环境下的卡尔曼滤波器设计往往靠式，因此这里提几个滤波器性能的客观量化指标。
@@ -567,13 +569,13 @@ $$\begin{array}{l|l}
 \mathbf{\bar P} = \sum w^c({\boldsymbol{\mathcal Y} - \mathbf{\bar x})(\boldsymbol{\mathcal Y} - \mathbf{\bar x})^\mathsf T}+\mathbf Q \\
 \hline 
 & \boldsymbol{\mathcal Z} =  h(\boldsymbol{\mathcal{Y}}) \\
-& \boldsymbol\mu_z = \sum w^m\boldsymbol{\mathcal{Z}} \\
+& \boldsymbol\mu\_z = \sum w^m\boldsymbol{\mathcal{Z}} \\
 \mathbf y = \mathbf z - \mathbf{Hx} &
-\mathbf y = \mathbf z - \boldsymbol\mu_z \\
+\mathbf y = \mathbf z - \boldsymbol\mu\_z \\
 \mathbf S = \mathbf{H\bar PH}^\mathsf{T} + \mathbf R & 
-\mathbf P_z = \sum w^c{(\boldsymbol{\mathcal Z}-\boldsymbol\mu_z)(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu_z)^\mathsf{T}} + \mathbf R \\ 
+\mathbf P_z = \sum w^c{(\boldsymbol{\mathcal Z}-\boldsymbol\mu\_z)(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu\_z)^\mathsf{T}} + \mathbf R \\ 
 \mathbf K = \mathbf{\bar PH}^\mathsf T \mathbf S^{-1} &
-\mathbf K = \left[\sum w^c(\boldsymbol{\mathcal Y}-\bar{\mathbf x})(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu_z)^\mathsf{T}\right] \mathbf P_z^{-1} \\
+\mathbf K = \left[\sum w^c(\boldsymbol{\mathcal Y}-\bar{\mathbf x})(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu\_z)^\mathsf{T}\right] \mathbf P_z^{-1} \\
 \mathbf x = \mathbf{\bar x} + \mathbf{Ky} & \mathbf x = \mathbf{\bar x} + \mathbf{Ky}\\
 \mathbf P = (\mathbf{I}-\mathbf{KH})\mathbf{\bar P} & \mathbf P = \bar{\mathbf P} - \mathbf{KP_z}\mathbf{K}^\mathsf{T}
 \end{array}$$
@@ -584,7 +586,7 @@ $$\begin{array}{l|l}
 为了方便我们记$\lambda = \alpha^2(n+\kappa)-n$
 先看点的位置如何得到：
 首先一个特殊的采样点是
-$$ \mathcal{X}_0 = \mu$$
+$$ \mathcal{X}\_0 = \mu$$
 之后其余点的计算
 $$ 
 \boldsymbol{\chi}_i = \begin{cases}
@@ -610,10 +612,10 @@ $$\mathbf{\bar x} = \begin{bmatrix} 1 & \Delta t & 0 \\ 0& 1& 0 \\ 0&0&1\end{bma
 \begin{bmatrix}x \\ \dot x\\ y\end{bmatrix}
 $$
 但本例中的观测函数就是非线性的了：
-$$\text{r} = \sqrt{(x_\text{ac} - x_\text{radar})^2 + (y_\text{ac} - y_\mathtt{radar})^2}$$
+$$\text{r} = \sqrt{(x\_\text{ac} - x\_\text{radar})^2 + (y\_\text{ac} - y\_\mathtt{radar})^2}$$
 
 
-$$\epsilon = \tan^{-1}{\frac{y_\mathtt{ac} - y_\text{radar}}{x_\text{ac} - x_\text{radar}}}$$
+$$\epsilon = \tan^{-1}{\frac{y\_\mathtt{ac} - y\_\text{radar}}{x\_\text{ac} - x\_\text{radar}}}$$
 代码实现如下：
 首先创造仿真环境：飞机和雷达站
 ```python
@@ -736,7 +738,7 @@ $$\begin{aligned}
 \end{aligned}$$
 这里需要小心角度相减的计算问题，即0°附近的离散性，显然可以取模处理之。
 此外还需要注意的是如何对角度求平均？显然359°和1°的平均是0°，但其数值均值却为180°。因此我们需要特别考虑此问题，使用下面的式子计算角度均值：
-$$\bar{\theta} = atan2\left(\frac{\sum_{i=1}^n \sin\theta_i}{n}, \frac{\sum_{i=1}^n \cos\theta_i}{n}\right)$$
+$$\bar{\theta} = atan2\left(\frac{\sum\_{i=1}^n \sin\theta\_i}{n}, \frac{\sum\_{i=1}^n \cos\theta\_i}{n}\right)$$
 规定的这些均值计算方法可以传入UKF类的初始化函数。
 具体代码见原书，不赘述，具有很好参考价值。
 实验：
@@ -775,7 +777,7 @@ EKF算法在卡尔曼发表线性卡尔曼滤波器后很快被提出，其应�
 对归一化权重[0.0625, 0.125 , 0.1875, 0.25  , 0.125 , 0.1875, 0.0625]，计算累积和序列得[0.0625, 0.1875, 0.375 , 0.625 , 0.75  , 0.9375, 1.    ]以便画出如下的图。之后制造0-1的随机数，按照几何概型，其落在各个色块的概率就是权重，进行N次后就可达到完整的重采样结果。
 {{<figure src = "18.png" title = "" lightbox = "true">}}
 重采样不是每次更新都进行的，没有新息注入时重采样并无意义。我们使用一下指标决定何时进行重采样：
-$$\hat{N}_\text{eff} = \frac{1}{\sum w^2}$$（w是粒子权重）
+$$\hat{N}\_\text{eff} = \frac{1}{\sum w^2}$$（w是粒子权重）
 重采样在此值小于每一给定的阈值（比如N/2，其中N为粒子数）后进行。此值是对当前有用粒子数量的估计。这种策略称Sampling Importance Resampling (SIR)。
 
 在上面的预测和更新两步中我们按输入u移动例子，并使用观测更新其对应权重，这种方法的理论依据正是著名的重要性采样（统计学通用方法，也被openai用在PPO中用于构建off-policy learning）：
@@ -783,7 +785,7 @@ $$\hat{N}_\text{eff} = \frac{1}{\sum w^2}$$（w是粒子权重）
 $$\mathbb{E}\big[f(x)\big] = \int f(x)\pi(x)\, dx$$
 转为
 $$\mathbb{E}\big[f(x)\big] = \int f(x)q(x)\, \,  \cdot \,  \frac{\pi(x)}{q(x)}\, dx$$
-在上面的机器人追踪问题中，分布π即机器人状态的分布，这是不一定对的（因为是推断的结果），而q分布即新获得的测量的分布，可以认为是准确的。因此自然的利用重要性采样公式换到q上采样会得到更精准的值。在具体实施中，我们计算的是$\mu = \sum\limits_{i=1}^N x^iw^i$，即加权平均，其中权重w就是重要性采样公式中的π/q。
+在上面的机器人追踪问题中，分布π即机器人状态的分布，这是不一定对的（因为是推断的结果），而q分布即新获得的测量的分布，可以认为是准确的。因此自然的利用重要性采样公式换到q上采样会得到更精准的值。在具体实施中，我们计算的是$\mu = \sum\limits\_{i=1}^N x^iw^i$，即加权平均，其中权重w就是重要性采样公式中的π/q。
 **粒子滤波中不同的重采样方法**
 重采样在粒子滤波中起到防止粒子退化的作用，有重要意义。除了上面的采样方法，还有残差重采样（Residual Resampling），分层重采样（Stratified Resampling），系统重采样（Systematic Resampling）。作者认为其中比较好的是系统重采样，这在采样量小的时候比较明显（所谓好指采样结果符合权重的程度好坏，好的采样应该很好符合权重规定的比例关系），但个人感觉在点稍多的时候这并不是个问题。不过系统重采样有O(N)的复杂度，这比上面的O(Nlog(N))好。
 **总结**
@@ -819,7 +821,7 @@ Adaptive Filtering旨在处理模型不匹配的情况，其检查到有当前�
 {{<figure src = "24.png" title = "" lightbox = "true">}}
 **自适应思路1：可调过程噪声**
 第一种方法是使用低阶模型，并根据机动是否发生来调整过程噪声。当残差变得“大”时，我们将增加过程噪声。这将导致滤波器更倾向于测量而不是过程预测，并且滤波器将密切跟踪信号。当残差很小时，我们将缩小过程噪声。
-一种连续调整的方法计算残差的归一化值$\epsilon = \mathbf{y^\mathsf{T}S}^{-1}\mathbf{y}$，其中S是过程噪声：$\mathbf{S} = \mathbf{HPH^\mathsf{T}} + \mathbf{R}$。我们可以设一个$\epsilon_{max}$（可通过实验选择，一个不错的经验值是$\epsilon$ 的4~5倍标准差），当$\epsilon \gt \epsilon_{max}$时将Q矩阵成一个扩大系数$q_{factor}$即可。下图$\epsilon_{max}=4， q_{factor}=1000$，可见显著的性能提升。
+一种连续调整的方法计算残差的归一化值$\epsilon = \mathbf{y^\mathsf{T}S}^{-1}\mathbf{y}$，其中S是过程噪声：$\mathbf{S} = \mathbf{HPH^\mathsf{T}} + \mathbf{R}$。我们可以设一个$\epsilon\_{max}$（可通过实验选择，一个不错的经验值是$\epsilon$ 的4~5倍标准差），当$\epsilon \gt \epsilon\_{max}$时将Q矩阵成一个扩大系数$q\_{factor}$即可。下图$\epsilon\_{max}=4， q\_{factor}=1000$，可见显著的性能提升。
 {{<figure src = "25.png" title = "" lightbox = "true">}}
 此外，还可计算$std = \sqrt{\mathbf{HPH}^\mathsf{T} + \mathbf{R}}$ 之后采用如下策略改变Q：当残差>std的某一倍数时，增大Q
 **自适应思路2：渐消记忆滤波器（Fading memory filters）**
@@ -827,7 +829,7 @@ Adaptive Filtering旨在处理模型不匹配的情况，其检查到有当前�
 {{<figure src = "26.png" title = "" lightbox = "true">}}
 **自适应思路3：多模型估计**
 这是一种集成（ensemble ）的思路。最朴素的想法是搞一把模型，然后看情况切换，当然也可进行UKF,KF的集成或对不同的状态变量使用不同的模型或算法。
-我们很容易实现的方法是对残差进行阈值判断，以此来切换模型，但这种硬切换显然会导致估计结果不连续的跳跃。因此，我们采用多模型自适应估计技术（MMAE），该方法按模型likelihoods给出融合结果。其中似然函数已在前述章节有过讨论：$\mathcal{L} = \frac{1}{\sqrt{2\pi S}}\exp [-\frac{1}{2}\mathbf{y}^\mathsf{T}\mathbf{S}^{-1}\mathbf{y}]$，其中y是残差，S是系统不确定性。之后按$p_k^i = \frac{\mathcal{L}_k^ip_{k-1}^i}{\sum\limits_{j=1}^N \mathcal{L}_k^jp_{k-1}^j}$分配即可。此方法的一个缺陷是算法可能收敛到只信任某一最可能算法上去，这需要被注意，可以通过重新初始化选择权重进行修正。
+我们很容易实现的方法是对残差进行阈值判断，以此来切换模型，但这种硬切换显然会导致估计结果不连续的跳跃。因此，我们采用多模型自适应估计技术（MMAE），该方法按模型likelihoods给出融合结果。其中似然函数已在前述章节有过讨论：$\mathcal{L} = \frac{1}{\sqrt{2\pi S}}\exp [-\frac{1}{2}\mathbf{y}^\mathsf{T}\mathbf{S}^{-1}\mathbf{y}]$，其中y是残差，S是系统不确定性。之后按$p\_k^i = \frac{\mathcal{L}\_k^ip\_{k-1}^i}{\sum\limits\_{j=1}^N \mathcal{L}\_k^jp\_{k-1}^j}$分配即可。此方法的一个缺陷是算法可能收敛到只信任某一最可能算法上去，这需要被注意，可以通过重新初始化选择权重进行修正。
 
 此外还有交互式多模型技术 IMM（Interacting Multiple Model），利用贝叶斯方法在多个模型间转移，但为了交互，其要求模型必需有相同的维数，这是个比较大的限制。
 
