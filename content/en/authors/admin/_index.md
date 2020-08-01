@@ -18,10 +18,10 @@ organizations:
   url: "http://www.bit.edu.cn/"
 
 # Short bio (displayed in user profile at end of posts)
-bio: My research interests include robotics, control.
+bio: My research interests include production system engineering, control.
 
 interests:
-- Robotics
+- Production System Engineering (PSE)
 - Optimal Control.
 
 education:
@@ -66,4 +66,4 @@ user_groups:
 - Visitors
 ---
 
-I was born in Beijing, and now I’m 23 years old. I obtained my bachelor’s degree in Automation from Shandong University, and I’m studying for my doctor’s degree supervised by prof. Dai @BIT.
+I obtained my bachelor’s degree in Automation from Shandong University, and I’m studying for my doctor’s degree supervised by prof. Dai @BIT.

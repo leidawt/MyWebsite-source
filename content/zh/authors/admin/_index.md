@@ -18,11 +18,11 @@ organizations:
   url: "http://www.bit.edu.cn/"
 
 # Short bio (displayed in user profile at end of posts)
-bio: My research interests include robotics, control.
+bio: 研究兴趣主要包括生产系统工程、最优控制.
 
 interests:
-- Robotics
-- Optimal Control.
+- 生产系统工程.
+- 最优控制.
 
 education:
   courses:
