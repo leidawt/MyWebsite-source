@@ -33,36 +33,54 @@ projects: []
 #    url: 'https://twitter.com/Twitter'
 
 ---
-####Vue+VUX ui库+Cordova打包混合应用
-####模板工程详见文末pan链接
-####1.项目的Cordova基本命令
+# Vue+VUX ui库+Cordova打包混合应用
+**模板工程详见文末pan链接**
+## 1.项目的Cordova基本命令
 初始化文件夹
 cordova create cordova-app com.lxlazy.www.app cordovaApp 
 进入
-cd cordova-app 
+```bash
+cd cordova-app
+```
 添加平台使用630API不然找不到
+```bash
 cordova platform add android@6.3.0
+```
 检查依赖
+```bash
 cordova requirements
+```
 真机调试
+```bash
 cordova run
+```
 添加插件
+```bash
 cordova plugin add XXXX
+```
 查看安装的插件
+```bash
 cordova plugins
+```
 卸载插件
+```bash
 cordova plugin remove XXXX
+```
 编译
+```bash
 cordova build android
-####2.项目的npm命令
+```
+## 2.项目的npm命令
 开启开发服务器 npm run dev
 编译web文件，更新cordova设置，编译apk并下载到手机运行 npm run update
-####3.工程结构
+
+## 3.工程结构
 {{<figure src = "0.png" title = "" lightbox = "true">}}
 index.html是主入口
 src文件夹包含vue组件，vue路由在main.js中，assets存放静态文件。
 vue-cordova文件夹存放的是一个vue插件，用于衔接vue和cordova提供的插件。项目地址：[vue-cordova](https://github.com/kartsims/vue-cordova)
-####4.添加cordova插件到项目
+
+## 4.添加cordova插件到项目
 首先运行cordova plugin add XXXX安装好插件
 然后注册到vue-cordova插件方便vue组件使用，如下操作：
 {{<figure src = "1.png" title = "" lightbox = "true">}}
@@ -99,20 +117,20 @@ data: function () {
 ```
 插件加载好后会被vue-cordova挂在在这里。
 这样拿到后就可以参考cordova的相应文档使用了。
-######注意项目中App.vue中mounted内函数对页面的触发控制，只有这样后续才可正常加载！
+**注意项目中App.vue中mounted内函数对页面的触发控制，只有这样后续才可正常加载！**
 cordova的插件也可从window上获取，如window.navigator.vibrate(100)
-####5.调试
+## 5.调试
 先在dev下完善ui和逻辑，也可在真机上调试web:
 打开 Chrome 浏览器，输入地址chrome://inspect，默认进入 chrome://inspect/#devices，将在页面显示当前可用设备，点击链接弹出控制台界面，然后跟普通页面一样调试
 之后使用npm run update安装到手机进行混合应用调试
-####6.图标
+## 6.图标
 png图标放在res/android目录下，可分大中小，详见cordova
 之后修改congig.xml中响应内容即可
-####7.一些常用cordova插件
-一   震动手机
+## 7.一些常用cordova插件
+### 震动手机
 安装vibrate插件
 window.navigator.vibrate(Time in ms);
-二  蓝牙串口
+### 蓝牙串口
 安装 bluetoothSerial [项目地址](https://github.com/don/BluetoothSerial)
 这是个和蓝牙串口模块通信的插件
 使用流程：
@@ -120,8 +138,9 @@ window.navigator.vibrate(Time in ms);
 链接设备   Vue.cordova.bluetoothSerial.connect
 向设备发送    Vue.cordova.bluetoothSerial.write
 监听设备回复   Vue.cordova.bluetoothSerial.subscribe
-三 存储简单数据
+### 存储简单数据
 简便方法是使用h5的storage特性，无存储期限限制，但大小不得过大，[详细介绍](http://www.w3school.com.cn/html5/html_5_webstorage.asp)
+
 例子如下
 ```
 SaveCurrentData: function () {
@@ -140,6 +159,10 @@ restoreData: function () {
 	}
 }
 ```
-####demo工程下载：
+
+## demo工程下载：
 链接：https://pan.baidu.com/s/1wcaCn4PPFGnSxBcYjWFKEg 密码：7w8b
 无需再npm install
+
+## Basic HTML Tutorial
+https://www.websiteplanet.com/blog/html-guide-beginners/
