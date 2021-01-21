@@ -267,3 +267,6 @@ zoom = 15
 [marketing]
 google_analytics = "UA-158088555-1"
 google_tag_manager = ""
+
+[icon.pack]
+ai = true # Academicons icon pack https://jpswalsh.github.io/academicons/
